@@ -104,7 +104,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AssimpKey.snk" />
+    <None Include="AssimpKey.snk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

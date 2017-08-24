@@ -72,14 +72,17 @@ namespace AssimpNet.Interop.Generator
             ReaderParameters readerParams = new ReaderParameters();
             WriterParameters writerParams = new WriterParameters();
 
-            if(keyFilePath != null)
+            if (keyFilePath != null)
+            {
                 writerParams.StrongNameKeyPair = new StrongNameKeyPair(File.Open(keyFilePath, FileMode.Open));
-
-            if(File.Exists(pdbFile))
+                Console.WriteLine("Using Keyfile");
+            }
+            if (File.Exists(pdbFile))
             {
                 readerParams.SymbolReaderProvider = new PdbReaderProvider();
                 readerParams.ReadSymbols = true;
                 writerParams.WriteSymbols = true;
+                Console.WriteLine("Including Symbols");
             }
 
             AssemblyDefinition assemblyDef = AssemblyDefinition.ReadAssembly(filePath, readerParams);
@@ -124,7 +127,24 @@ namespace AssimpNet.Interop.Generator
 
             RemoveInteropClass(assemblyDef);
 
-            assemblyDef.Write(filePath, writerParams);
+            var tempFile = Path.Combine(Path.GetDirectoryName(filePath), "AssimpNetTemp.dll");
+            var tempPdbFile = Path.Combine(Path.GetDirectoryName(filePath), "AssimpNetTemp.pdb");
+
+            assemblyDef.Write(tempFile, writerParams);
+            assemblyDef.Dispose();
+
+            File.Delete(filePath);
+            if (writerParams.WriteSymbols) File.Delete(pdbFile);
+
+            File.Move(tempFile, filePath);
+            if (writerParams.WriteSymbols) File.Move(tempPdbFile, pdbFile);
+
+
+            //var dllStream = new MemoryStream();
+            //assemblyDef.Write(dllStream, writerParams); //.Write(filePath, writerParams);
+            //assemblyDef.Dispose();
+            //var dll = dllStream.ToArray();
+            //File.WriteAllBytes(filePath, dll);
 
             Console.WriteLine("Interop Generation complete.");
         }
@@ -296,7 +316,7 @@ namespace AssimpNet.Interop.Generator
         {
             //Make sure we import IntPtr::op_explicit(void*)
             MethodInfo opExplicitInfo = typeof(IntPtr).GetMethod("op_Explicit", new Type[] { typeof(void*) });
-            MethodReference opExplicitRef = method.Module.Import(opExplicitInfo);
+            MethodReference opExplicitRef = method.Module.ImportReference(opExplicitInfo);
 
             method.Body.Instructions.Clear();
             method.Body.InitLocals = true;
@@ -345,7 +365,7 @@ namespace AssimpNet.Interop.Generator
         {
             //Make sure we import IntPtr::op_explicit(void*)
             MethodInfo opExplicitInfo = typeof(IntPtr).GetMethod("op_Explicit", new Type[] { typeof(void*) });
-            MethodReference opExplicitRef = method.Module.Import(opExplicitInfo);
+            MethodReference opExplicitRef = method.Module.ImportReference(opExplicitInfo);
 
             method.Body.Instructions.Clear();
             method.Body.InitLocals = true;

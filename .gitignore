@@ -6,3 +6,4 @@
 /.paket/paket.exe
 /.vs
 *.suo
+*.user
