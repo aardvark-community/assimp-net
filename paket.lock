@@ -1,0 +1,23 @@
+RESTRICTION: == net45
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    Mono.Cecil (0.10.0-beta6)
+
+GROUP Build
+CONTENT: NONE
+RESTRICTION: == net45
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    Chessie (0.6) - content: none
+      FSharp.Core
+    FAKE (4.52) - content: none
+    FSharp.Core (4.2.3) - content: none
+    Mono.Cecil (0.10.0-beta6) - content: none
+    SourceLink.Fake (1.1) - content: none
+GITHUB
+  remote: vrvis/Aardvark.Fake
+    FULLPROJECT (23bfe16697a473e2b03b806b2d56cb05fb94828b)
+      Chessie (>= 0.6 < 0.7)
+      FAKE (>= 4.52 < 4.53)
+      Mono.Cecil (>= 0.10.0-beta6 < 0.11)
+      SourceLink.Fake (>= 1.1 < 1.2)
