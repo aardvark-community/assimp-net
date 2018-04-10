@@ -2,7 +2,8 @@ framework: net45
 source https://api.nuget.org/v3/index.json
 source https://vrvis.myget.org/F/aardvark_public/api/v3/index.json
 
-nuget Mono.Cecil ~> 0.10.0-beta6
+nuget Mono.Cecil ~> 0.10.0
+
 
 group Build
 framework: net45
