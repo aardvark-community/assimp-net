@@ -10,3 +10,4 @@
 /.paket/Paket.Restore.targets
 /src/.vs/AssimpNet/v15/Server/sqlite3/*.lock
 /src/.vs/AssimpNet/v15/Server/sqlite3/*.ide
+**/.vs/**

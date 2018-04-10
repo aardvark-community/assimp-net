@@ -41,6 +41,7 @@ namespace AssimpNet.Interop.Generator
 
         static void Main(string[] args)
         {
+            System.Diagnostics.Debugger.Launch();
             if(args.Length == 0)
                 return;
 
@@ -74,7 +75,8 @@ namespace AssimpNet.Interop.Generator
 
             if (keyFilePath != null)
             {
-                writerParams.StrongNameKeyPair = new StrongNameKeyPair(File.Open(keyFilePath, FileMode.Open));
+#warning TODO: strong naming
+                //writerParams.StrongNameKeyPair = new StrongNameKeyPair(File.Open(keyFilePath, FileMode.Open));
                 Console.WriteLine("Using Keyfile");
             }
             if (File.Exists(pdbFile))
@@ -104,8 +106,11 @@ namespace AssimpNet.Interop.Generator
                 }
             }
 
-            if(mscorLib == null)
-                throw new InvalidOperationException("Missing mscorlib.dll");
+            if (mscorLib == null)
+            {
+                Console.WriteLine("WARNING: Missing mscorlib.dll");
+                //throw new InvalidOperationException("Missing mscorlib.dll");
+            }
 
             m_mscorLib = mscorLib;
 
