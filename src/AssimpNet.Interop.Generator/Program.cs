@@ -37,11 +37,10 @@ namespace AssimpNet.Interop.Generator
     /// </summary>
     class Program
     {
-        private static AssemblyDefinition m_mscorLib;
+        //private static AssemblyDefinition m_mscorLib;
 
         static void Main(string[] args)
         {
-            System.Diagnostics.Debugger.Launch();
             if(args.Length == 0)
                 return;
 
@@ -90,29 +89,29 @@ namespace AssimpNet.Interop.Generator
             AssemblyDefinition assemblyDef = AssemblyDefinition.ReadAssembly(filePath, readerParams);
             ((BaseAssemblyResolver) assemblyDef.MainModule.AssemblyResolver).AddSearchDirectory(Path.GetDirectoryName(filePath));
 
-            AssemblyDefinition mscorLib = null;
-            foreach(AssemblyNameReference assemblyNameReference in assemblyDef.MainModule.AssemblyReferences)
-            {
-                if(assemblyNameReference.Name.ToLower() == "mscorlib")
-                {
-                    mscorLib = assemblyDef.MainModule.AssemblyResolver.Resolve(assemblyNameReference);
-                    break;
-                }
-                else if(assemblyNameReference.Name == "System.Runtime")
-                {
-                    ((BaseAssemblyResolver) assemblyDef.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(GetProgramFilesFolder(), @"Reference Assemblies\Microsoft\Framework\.NETCore\v4.5"));
-                    mscorLib = assemblyDef.MainModule.AssemblyResolver.Resolve(assemblyNameReference);
-                    break;
-                }
-            }
+            //AssemblyDefinition mscorLib = null;
+            //foreach(AssemblyNameReference assemblyNameReference in assemblyDef.MainModule.AssemblyReferences)
+            //{
+            //    if(assemblyNameReference.Name.ToLower() == "mscorlib")
+            //    {
+            //        mscorLib = assemblyDef.MainModule.AssemblyResolver.Resolve(assemblyNameReference);
+            //        break;
+            //    }
+            //    else if(assemblyNameReference.Name == "System.Runtime")
+            //    {
+            //        ((BaseAssemblyResolver) assemblyDef.MainModule.AssemblyResolver).AddSearchDirectory(Path.Combine(GetProgramFilesFolder(), @"Reference Assemblies\Microsoft\Framework\.NETCore\v4.5"));
+            //        mscorLib = assemblyDef.MainModule.AssemblyResolver.Resolve(assemblyNameReference);
+            //        break;
+            //    }
+            //}
 
-            if (mscorLib == null)
-            {
-                Console.WriteLine("WARNING: Missing mscorlib.dll");
-                //throw new InvalidOperationException("Missing mscorlib.dll");
-            }
+            //if (mscorLib == null)
+            //{
+            //    Console.WriteLine("WARNING: Missing mscorlib.dll");
+            //    //throw new InvalidOperationException("Missing mscorlib.dll");
+            //}
 
-            m_mscorLib = mscorLib;
+            //m_mscorLib = mscorLib;
 
             for(int i = 0; i < assemblyDef.CustomAttributes.Count; i++)
             {

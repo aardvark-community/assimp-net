@@ -3,6 +3,4 @@ id Unofficial.AssimpNet
 authors VRVis Research Center
 description
     Unofficial.AssimpNet
-files
-    ..\..\bin\Release\AssimpNet.dll ==> lib\net45
-    ..\..\bin\Release\AssimpNet.pdb ==> lib\net45
+include-pdbs true
