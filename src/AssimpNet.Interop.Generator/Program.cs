@@ -41,7 +41,7 @@ namespace AssimpNet.Interop.Generator
 
         static void Main(string[] args)
         {
-            System.Diagnostics.Debugger.Launch();
+            //System.Diagnostics.Debugger.Launch();
             if(args.Length == 0)
                 return;
 
