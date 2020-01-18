@@ -3,3 +3,4 @@ id Unofficial.AssimpNet
 authors VRVis Research Center
 description
     Unofficial.AssimpNet
+include-pdbs true

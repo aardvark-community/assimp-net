@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Net45-Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -59,7 +59,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AssimpNet\AssimpNet.csproj">
       <Project>{f72e89cc-857e-4486-b0c3-c40f2cb0dba1}</Project>
-      <Name>AssimpNet_netstandard</Name>
+      <Name>AssimpNet</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

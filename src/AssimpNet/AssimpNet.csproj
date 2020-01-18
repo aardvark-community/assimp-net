@@ -7,18 +7,16 @@
     <Product>AssimpNet</Product>
     <Copyright>Copyright © 2012-2013 AssimpNet - Nicholas Woodfield</Copyright>
     <Description>port of AssimpNet to netstandard2.0</Description>
-    <AssemblyName>AssimpNet</AssemblyName>
-    <RootNamespace>AssimpNet</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug</OutputPath>
     <DocumentationFile>..\..\bin\Debug\netstandard2.0\AssimpNET.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release</OutputPath>
     <DocumentationFile>..\..\bin\Release\netstandard2.0\AssimpNET.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -29,6 +27,6 @@
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(SolutionDir)..\bin\$(Configuration)\AssimpNet.Interop.Generator.exe&quot; &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)AssimpKey.snk&quot;" />
+    <Exec Command="&quot;$(SolutionDir)..\bin\$(Configuration)\net471\AssimpNet.Interop.Generator.exe&quot; &quot;$(TargetDir)$(TargetFileName)&quot; &quot;$(ProjectDir)AssimpKey.snk&quot;" />
   </Target>
 </Project>
