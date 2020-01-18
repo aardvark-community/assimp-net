@@ -1497,6 +1497,32 @@ namespace Assimp.Unmanaged
         private IntPtr m_libraryHandle;
         private bool m_isDisposed;
 
+        public static string NativeLibraryPath = Path.Combine(Path.GetTempPath(), "aardvark-native");
+
+        public static string GetNativeLibraryPath(Assembly assembly)
+        {
+            var path = Environment.CurrentDirectory;
+            var info = assembly.GetManifestResourceInfo("native.zip");
+            if (info == null)
+            {
+                return path;
+            }
+            else
+            {
+                using (var s = assembly.GetManifestResourceStream("native.zip"))
+                {
+                    string dstFolder = NativeLibraryPath;
+                    var md5 = System.Security.Cryptography.MD5.Create();
+                    var hash = new Guid(md5.ComputeHash(s));
+                    md5.Dispose();
+                    var bits = IntPtr.Size * 8;
+                    var folderName = string.Format("{0}-{1}-{2}", assembly.GetName().Name, hash.ToString(), bits);
+                    dstFolder = Path.Combine(NativeLibraryPath, folderName);
+                    return dstFolder;
+                }
+            }
+        }
+
         public bool LibraryLoaded
         {
             get
@@ -1673,7 +1699,8 @@ namespace Assimp.Unmanaged
 
         protected override IntPtr NativeLoadLibrary(string path)
         {
-            IntPtr libraryHandle = LoadLibrary(path);
+            path = Path.Combine(GetNativeLibraryPath(typeof(AssimpContext).Assembly), Path.GetFileName(path));
+            IntPtr libraryHandle = LoadLibrary(Path.GetFileNameWithoutExtension(path));
 
             if(libraryHandle == IntPtr.Zero)
             {
@@ -1741,6 +1768,7 @@ namespace Assimp.Unmanaged
 
         protected override IntPtr NativeLoadLibrary(String path)
         {
+            path = Path.Combine(GetNativeLibraryPath(typeof(AssimpContext).Assembly), Path.GetFileName(path));
             IntPtr libraryHandle = dlopen(path, RTLD_NOW);
 
             if(libraryHandle == IntPtr.Zero)
