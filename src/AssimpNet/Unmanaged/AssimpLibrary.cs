@@ -1491,34 +1491,56 @@ namespace Assimp.Unmanaged
     /// Base class for library implementations, handles loading of each unmanaged function delegate. Implementations handle the environment specific
     /// tasks of loading the native library and getting function proc addresses.
     /// </summary>
-    internal abstract class AssimpLibraryImplementation : IDisposable
+    public abstract class AssimpLibraryImplementation : IDisposable
     {
         private Dictionary<String, Delegate> m_nameToUnmanagedFunction;
         private IntPtr m_libraryHandle;
         private bool m_isDisposed;
 
+        public static bool SeparateLibraryDirectories = true;
         public static string NativeLibraryPath = Path.Combine(Path.GetTempPath(), "aardvark-native");
 
-        public static string GetNativeLibraryPath(Assembly assembly)
+        private static Dictionary<Assembly, string> s_nativePaths = new Dictionary<Assembly, string>();
+
+        public static bool TryGetNativeLibraryPath(Assembly assembly, out string path)
         {
-            var path = Environment.CurrentDirectory;
-            var info = assembly.GetManifestResourceInfo("native.zip");
-            if (info == null)
+            if (assembly.IsDynamic) { path = null; return false; }
+
+            lock (s_nativePaths)
             {
-                return path;
-            }
-            else
-            {
-                using (var s = assembly.GetManifestResourceStream("native.zip"))
+                if (s_nativePaths.TryGetValue(assembly, out path))
                 {
-                    string dstFolder = NativeLibraryPath;
-                    var md5 = System.Security.Cryptography.MD5.Create();
-                    var hash = new Guid(md5.ComputeHash(s));
-                    md5.Dispose();
-                    var bits = IntPtr.Size * 8;
-                    var folderName = string.Format("{0}-{1}-{2}", assembly.GetName().Name, hash.ToString(), bits);
-                    dstFolder = Path.Combine(NativeLibraryPath, folderName);
-                    return dstFolder;
+                    if (path == null) return false;
+                    else return true;
+                }
+                else
+                {
+                    var info = assembly.GetManifestResourceInfo("native.zip");
+                    if (info == null)
+                    {
+                        s_nativePaths[assembly] = null;
+                        return false;
+                    }
+                    else
+                    {
+                        using (var s = assembly.GetManifestResourceStream("native.zip"))
+                        {
+                            string dstFolder = NativeLibraryPath;
+                            if (SeparateLibraryDirectories)
+                            {
+                                var md5 = System.Security.Cryptography.MD5.Create();
+                                var hash = new Guid(md5.ComputeHash(s));
+                                md5.Dispose();
+                                var bits = IntPtr.Size * 8;
+                                var folderName = string.Format("{0}-{1}-{2}", assembly.GetName().Name, hash.ToString(), bits);
+                                dstFolder = Path.Combine(NativeLibraryPath, folderName);
+                            }
+
+                            s_nativePaths[assembly] = dstFolder;
+                            path = dstFolder;
+                            return true;
+                        }
+                    }
                 }
             }
         }
@@ -1699,7 +1721,10 @@ namespace Assimp.Unmanaged
 
         protected override IntPtr NativeLoadLibrary(string path)
         {
-            path = Path.Combine(GetNativeLibraryPath(typeof(AssimpContext).Assembly), Path.GetFileName(path));
+            string dir;
+            if (!TryGetNativeLibraryPath(typeof(AssimpContext).Assembly, out dir)) dir = Environment.CurrentDirectory;
+
+            path = Path.Combine(dir, Path.GetFileName(path));
             IntPtr libraryHandle = LoadLibrary(Path.GetFileNameWithoutExtension(path));
 
             if(libraryHandle == IntPtr.Zero)
@@ -1768,7 +1793,10 @@ namespace Assimp.Unmanaged
 
         protected override IntPtr NativeLoadLibrary(String path)
         {
-            path = Path.Combine(GetNativeLibraryPath(typeof(AssimpContext).Assembly), Path.GetFileName(path));
+            string dir;
+            if (!TryGetNativeLibraryPath(typeof(AssimpContext).Assembly, out dir)) dir = Environment.CurrentDirectory;
+
+            path = Path.Combine(dir, Path.GetFileName(path));
             IntPtr libraryHandle = dlopen(path, RTLD_NOW);
 
             if(libraryHandle == IntPtr.Zero)
