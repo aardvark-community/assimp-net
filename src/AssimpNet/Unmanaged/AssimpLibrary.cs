@@ -1708,7 +1708,7 @@ namespace Assimp.Unmanaged
             }
         }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, BestFitMapping = false, SetLastError = true)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true)]
         private static extern IntPtr LoadLibrary(String fileName);
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
@@ -1716,7 +1716,7 @@ namespace Assimp.Unmanaged
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool FreeLibrary(IntPtr hModule);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Ansi, BestFitMapping = false, SetLastError = true)]
         private static extern IntPtr GetProcAddress(IntPtr hModule, String procName);
 
         protected override IntPtr NativeLoadLibrary(string path)
