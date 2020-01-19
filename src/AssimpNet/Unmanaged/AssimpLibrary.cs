@@ -1725,7 +1725,7 @@ namespace Assimp.Unmanaged
             if (!TryGetNativeLibraryPath(typeof(AssimpContext).Assembly, out dir)) dir = Environment.CurrentDirectory;
 
             path = Path.Combine(dir, Path.GetFileName(path));
-            IntPtr libraryHandle = LoadLibrary(Path.GetFileNameWithoutExtension(path));
+            IntPtr libraryHandle = LoadLibrary(path);
 
             if(libraryHandle == IntPtr.Zero)
             {
