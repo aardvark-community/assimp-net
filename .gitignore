@@ -12,3 +12,4 @@
 /src/.vs/AssimpNet/v15/Server/sqlite3/*.ide
 **/.vs/**
 /.paket
+**/.DS_Store

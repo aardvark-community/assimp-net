@@ -21,7 +21,11 @@
 */
 
 using System;
-
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Reflection;
+using Assimp.Configs;
 namespace Assimp.Sample
 {
     static class Program
@@ -32,8 +36,12 @@ namespace Assimp.Sample
         [STAThread]
         static void Main()
         {
-            SimpleOpenGLSample sample = new SimpleOpenGLSample();
-            sample.Run(30.0, 0.0);
+            String fileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "duck.dae");
+
+            AssimpContext importer = new AssimpContext();
+            var m_model = importer.ImportFile(fileName);
+            return;
+
         }
     }
 }
