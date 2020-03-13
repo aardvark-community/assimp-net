@@ -1849,16 +1849,16 @@ namespace Assimp.Unmanaged
             }
         }
 
-        [DllImport("libdyld")]
+        [DllImport("dl")]
         private static extern IntPtr dlopen(String fileName, int flags);
 
-        [DllImport("libdyld")]
+        [DllImport("dl")]
         private static extern IntPtr dlsym(IntPtr handle, String functionName);
 
-        [DllImport("libdyld")]
+        [DllImport("dl")]
         private static extern int dlclose(IntPtr handle);
 
-        [DllImport("libdyld")]
+        [DllImport("dl")]
         private static extern IntPtr dlerror();
 
         private const int RTLD_NOW = 2;
