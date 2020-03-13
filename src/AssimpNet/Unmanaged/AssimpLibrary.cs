@@ -1465,19 +1465,19 @@ namespace Assimp.Unmanaged
         public const String DefaultWindows32BitPath = "Assimp32.dll";
         public const String DefaultWindows64BitPath = "Assimp64.dll";
 
-        public const String DefaultLinux32BitPath = "Assimp32.so";
-        public const String DefaultLinux64BitPath = "Assimp64.so";
+        public const String DefaultLinux32BitPath = "libassimp.so";
+        public const String DefaultLinux64BitPath = "libassimp.so";
+
+        public const String DefaultDarwin32BitPath = "libassimp.dylib";
+        public const String DefaultDarwin64BitPath = "libassimp.dylib";
 
         public static AssimpLibraryImplementation CreateRuntimeImplementation()
         {
-            if(IsLinux())
-            {
-                return new AssimpLibraryLinuxImplementation();
-            }
-            else
-            {
-                return new AssimpLibraryWindowsImplementation();
-            }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return new AssimpLibraryLinuxImplementation();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return new AssimpLibraryDarwinImplementation();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return new AssimpLibraryWindowsImplementation();
+            throw new Exception("bad platform");
+
         }
 
         private static bool IsLinux()
@@ -1825,5 +1825,76 @@ namespace Assimp.Unmanaged
 
     #endregion
 
+    #region Darwin Implementation
+
+    /// <summary>
+    /// Linux implementation for loading the unmanaged assimp library.
+    /// </summary>
+    internal sealed class AssimpLibraryDarwinImplementation : AssimpLibraryImplementation
+    {
+
+        public override string DefaultLibraryPath32Bit
+        {
+            get
+            {
+                return AssimpDefaultLibraryPath.DefaultDarwin32BitPath;
+            }
+        }
+
+        public override string DefaultLibraryPath64Bit
+        {
+            get
+            {
+                return AssimpDefaultLibraryPath.DefaultDarwin64BitPath;
+            }
+        }
+
+        [DllImport("libdyld")]
+        private static extern IntPtr dlopen(String fileName, int flags);
+
+        [DllImport("libdyld")]
+        private static extern IntPtr dlsym(IntPtr handle, String functionName);
+
+        [DllImport("libdyld")]
+        private static extern int dlclose(IntPtr handle);
+
+        [DllImport("libdyld")]
+        private static extern IntPtr dlerror();
+
+        private const int RTLD_NOW = 2;
+
+        protected override IntPtr NativeLoadLibrary(String path)
+        {
+            string dir;
+            if (!TryGetNativeLibraryPath(typeof(AssimpContext).Assembly, out dir)) dir = Environment.CurrentDirectory;
+
+            path = Path.Combine(dir, Path.GetFileName(path));
+            IntPtr libraryHandle = dlopen(path, RTLD_NOW);
+
+            if (libraryHandle == IntPtr.Zero)
+            {
+                IntPtr errPtr = dlerror();
+                String msg = Marshal.PtrToStringAnsi(errPtr);
+                if (!String.IsNullOrEmpty(msg))
+                    throw new AssimpException("Error loading unmanaged library from path: " + path + ", error detail:\n" + msg);
+                else
+                    throw new AssimpException("Error loading unmanaged library from path: " + path);
+            }
+
+            return libraryHandle;
+        }
+
+        protected override void NativeFreeLibrary(IntPtr handle)
+        {
+            dlclose(handle);
+        }
+
+        protected override IntPtr NativeGetProcAddress(IntPtr handle, string functionName)
+        {
+            return dlsym(handle, functionName);
+        }
+    }
+
+    #endregion
     #endregion
 }
